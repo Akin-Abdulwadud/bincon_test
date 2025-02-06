@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Question 3 Solution</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="p-3">
+                <a href="index.html" class="btn btn-primary">Question 1 Solution</a>
+                <a href="question_2.html" class="btn btn-primary">Question 2 Solution</a>
+            </div>
+            <form action="uploadPuResult.php" method="POST">
+                <label>Agent Name</label>
+                <input type="text" class="form-control" name="agentName" placeholder="Enter your name" required>
+
+                <label>Polling Unit Number</label>
+                <input type="text" class="form-control" name="puNumber" placeholder="Enter Polling Unit Number" required>
+
+                <label>Polling Unit Name</label>
+                <input type="text" class="form-control" name="puName" placeholder="Enter Polling Unit Name" required>
+
+                <label>Polling Unit Longitude</label>
+                <input type="text" class="form-control" name="puLat" placeholder="Enter Polling Unit Longitude" required>
+
+                <label>Polling Unit Latitude</label>
+                <input type="text" class="form-control" name="puLong" placeholder="Enter Polling Unit Latitude" required>
+
+                <label>Local Gorvernment</label>
+                <select class="form-control" id="availableLg" required name="lgId">
+                    <option selected>Choose the polling unit Local Gorvernment</option>
+                </select>
+                
+                <div id="inputRows" class="p-1">
+                    <button type="button" onclick="addRow()" class="btn btn-success mt-3">Add More Party</button>
+
+                    <div class="form-row">
+                        <input type="text" name="partyAbb[]" placeholder="Enter Party Abbreviation" required>
+                        <input type="number" name="partyScore[]" placeholder="Enter Party Score" required>
+                    </div>
+                </div>
+                
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
+
+        <script type="text/javascript">          
+            $(document).ready(function() {
+                $.get("fetLocalGorverments.php", function(localGorverment){
+                    // alert(localGorverment);
+                    if(localGorverment == "No LG Available"){
+                        return;
+                    }
+                    var localGorverment = JSON.parse(localGorverment);
+                    const lgElement = document.getElementById('availableLg');
+                    for(i in localGorverment){
+                        lgElement.innerHTML += 
+                            `<option value="${localGorverment[i].lga_id}">${localGorverment[i].lga_name}</option>`;
+                    }
+                })
+            })
+            function addRow() {
+                const newRow = document.createElement('div');
+                newRow.classList.add('form-row');
+                newRow.innerHTML = 
+                    `<input type="text" name="partyAbb[]" placeholder="Enter Party Abbreviation" required>
+                    <input type="number" name="partyScore[]" placeholder="Enter Party Score" required>`;
+                document.getElementById('inputRows').appendChild(newRow);
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>

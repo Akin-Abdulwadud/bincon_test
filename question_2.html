@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Question 2 Solution</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="p-3">
+                <a href="index.html" class="btn btn-primary">Question 1 Solution</a>
+                <a href="question_3.html" class="btn btn-primary">Question 3 Solution</a>
+            </div>
+            <select class="form-select form-select-lg p-3" id="availableLg">
+                <option selected>Choose a Local Gorvernment</option>
+            </select>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Party</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="totalLgResult">
+                    <tr>
+                        <td>NULL</td>
+                        <td>NULL</td>
+                    </tr>
+                </tbody>
+            </table>            
+
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $.get("fetLocalGorverments.php", function(localGorverment){
+                    // alert(localGorverment);
+                    if(localGorverment == "No LG Available"){
+                        return;
+                    }
+                    var localGorverment = JSON.parse(localGorverment);
+                    const lgElement = document.getElementById('availableLg');
+                    for(i in localGorverment){
+                        lgElement.innerHTML += 
+                            `<option value="${localGorverment[i].uniqueid}">${localGorverment[i].lga_name}</option>`;
+                    }
+
+                    lgElement.addEventListener('change', function() {
+                        const selectedLg = lgElement.value;
+                        sumOfPuResult(selectedLg);
+                    });        
+                })
+            })
+
+            const sumOfPuResult = (i) =>{
+                console.log(i);
+                var Data = {id:i};
+    	        data = JSON.stringify(Data);
+    	        $.ajax({
+                    type:'post',
+                    url: 'fetchTotalPuResult.php',
+                    data: data,
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(response){
+                        // console.log(response);
+                        if (response === "Invalid Local Gorvernment Id") {
+                            alert("No Polling Unit Result Accounced in this Local Gorvernment");
+                            document.getElementById('totalLgResult').innerHTML = "";
+                            document.getElementById('totalLgResult').innerHTML += `<tr>
+                                <td>NULL</td>
+                                <td>NULL</td>
+                            </tr>`
+                            return;
+                        }
+                        partyScores = JSON.parse(response);
+                        document.getElementById('totalLgResult').innerHTML = "";
+                        for (let party in partyScores) {
+                            if (partyScores.hasOwnProperty(party)) {
+                                document.getElementById('totalLgResult').innerHTML += `<tr>
+                                    <td>${party}</td>
+                                    <td>${partyScores[party]}</td>
+                                </tr>`
+                                console.log(party, partyScores[party]);
+                            }
+                        }
+                    }
+		        })
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>
